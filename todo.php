@@ -15,9 +15,9 @@ $row = $result->fetch_assoc();
 
 echo "Ahoj " . $row["username"];
 
-if ($_POST["submit"] == "true") {
+if ($_POST["submit"]=="Odeslat") {
     $novy_ukol = $_POST["description"];
-    $sql_insert = "INSERT INTO `todos` (`statusID`, `todo`) VALUES (1,$novy_ukol)";
+    $sql_insert = "INSERT INTO `todos` VALUES (DEFAULT,$user_id,1,'$novy_ukol')";
     $resultinsert = mysqli_query($db, $sql_insert) or die($sql_insert);
 } elseif ($_POST["complete"] == "true") {
     $todoID = $_POST["id"];
@@ -35,11 +35,11 @@ $result2 = mysqli_query($db, $sql_dotaz2) or die($sql_dotaz2);
 
 <form action="todo.php" method="POST">
     <input type="text" name="description" placeholder="pridej ukol"> 
-    <input type="submit">
+    <input type="submit" name="submit" value="Odeslat">
 </form>
 
-<table> 
-    <thead><th>Task</th><th></th><th></th></thead>
+<table rules="all" frame="border"> 
+    <thead><th> Úkoly pro dnešní den: </th><th></th><th></th></thead>
 <tbody>
 
 <?php while ($row = $result2->fetch_assoc()) { ?>
@@ -50,20 +50,20 @@ $result2 = mysqli_query($db, $sql_dotaz2) or die($sql_dotaz2);
             <td>
     <?php if ($row["statusID"] == 1) { ?>
                     <form action="todo.php" method="POST">
-                        <button type="submit" name="complete">Complete!</button>
+                        <button type="submit" name="complete">Hotovo</button>
                         <input type="hidden" name="id" value="<?= $row['ID'] ?>">
                         <input type="hidden" name="complete" value="true">
 
                     </form>  
         <?php
     } else {
-        echo "Task complete!";
+        echo "Úkol splněn!";
     }
     ?>
             </td>
             <td>
                 <form action="todo.php" method="POST">
-                    <button type="submit" name="delete">Delete</button>
+                    <button type="submit" name="delete">Smazat</button>
                     <input type="hidden" name="id" value="<?= $row['ID'] ?>">
                     <input type="hidden" name="delete" value="true">
 

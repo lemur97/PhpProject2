@@ -3,7 +3,7 @@
  include 'connect.php';
  if(!isset($_POST["nick"])){
 
-     echo '<h1>Welcome!</h1>'; ?>
+     echo '<h1>Vítej!</h1>'; ?>
      
      <form action="index.php" method="POST">
          <input type="text" name="nick" placeholder="nick"> <br>
