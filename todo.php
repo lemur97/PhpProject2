@@ -15,9 +15,14 @@ $row = $result->fetch_assoc();
 
 echo "Ahoj " . $row["username"];
 
-if ($_POST["submit"]=="Odeslat") {
+if ($_POST["submit"] == "Odeslat") {
     $novy_ukol = $_POST["description"];
-    $sql_insert = "INSERT INTO `todos` VALUES (DEFAULT,$user_id,1,'$novy_ukol')";
+    if ($user_id == 3) {
+        $target_id = $_POST["userID"];
+        $sql_insert = "INSERT INTO `todos` VALUES (DEFAULT,$target_id,1,'$novy_ukol')";
+    } else {
+        $sql_insert = "INSERT INTO `todos` VALUES (DEFAULT,$user_id,1,'$novy_ukol')";
+    }
     $resultinsert = mysqli_query($db, $sql_insert) or die($sql_insert);
 } elseif ($_POST["complete"] == "true") {
     $todoID = $_POST["id"];
@@ -28,13 +33,21 @@ if ($_POST["submit"]=="Odeslat") {
     $sql_delete = "DELETE FROM `todos` WHERE `ID`= $todoID";
     $resultdelete = mysqli_query($db, $sql_delete) or die($sql_delete);
 }
-
-$sql_dotaz2 = "SELECT * FROM `todos` WHERE `userID`= $user_id";
+if ($user_id == 3) {
+    $sql_dotaz2 = "SELECT * FROM `todos` WHERE 1 ";
+} else {
+    $sql_dotaz2 = "SELECT * FROM `todos` WHERE `userID`= $user_id";
+}
 $result2 = mysqli_query($db, $sql_dotaz2) or die($sql_dotaz2);
 ?>
 
 <form action="todo.php" method="POST">
     <input type="text" name="description" placeholder="pridej ukol"> 
+    <?php
+    if ($user_id == 3) {
+        echo '<input type="text" name="userID" placeholder="komu">';
+    }
+    ?>
     <input type="submit" name="submit" value="Odeslat">
 </form>
 
@@ -42,29 +55,33 @@ $result2 = mysqli_query($db, $sql_dotaz2) or die($sql_dotaz2);
     <thead><th> Úkoly pro dnešní den: </th><th></th><th></th></thead>
 <tbody>
 
-<?php while ($row = $result2->fetch_assoc()) { ?>
-        <tr>
+        <?php while ($row = $result2->fetch_assoc()) { ?>
+        <tr> <?php
+            if ($user_id == 3) {
+                echo "<td>" . $row["userID"] . "</td>";
+            }
+            ?>
             <td>
-    <?php echo $row["todo"]; ?>  
+                <?php echo $row["todo"]; ?>  
             </td>
             <td>
     <?php if ($row["statusID"] == 1) { ?>
                     <form action="todo.php" method="POST">
                         <button type="submit" name="complete">Hotovo</button>
-                        <input type="hidden" name="id" value="<?= $row['ID'] ?>">
+                        <input type="hidden" name="id" value="<?= $row["ID"] ?>">
                         <input type="hidden" name="complete" value="true">
 
                     </form>  
-        <?php
-    } else {
-        echo "Úkol splněn!";
-    }
-    ?>
+                    <?php
+                } else {
+                    echo "Úkol splněn!";
+                }
+                ?>
             </td>
             <td>
                 <form action="todo.php" method="POST">
                     <button type="submit" name="delete">Smazat</button>
-                    <input type="hidden" name="id" value="<?= $row['ID'] ?>">
+                    <input type="hidden" name="id" value="<?= $row["ID"] ?>">
                     <input type="hidden" name="delete" value="true">
 
                 </form>  
